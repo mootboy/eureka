@@ -1,0 +1,9 @@
+{application, eureka, [ {description, "Home Automation Server"}
+                      , {vsn, "0.1.0"}
+                      , {modules, []}
+                      , {registered, [eureka_sup]}
+                      , {applications, [ kernel, stdlib, cowboy]}
+                      , {mod, {eureka_app, []}}
+                      , {env, []}
+                      ]}.
+%% vim: filetype=erlang

@@ -1,0 +1,4 @@
+.*.swp
+ebin/
+_rel/
+deps/
