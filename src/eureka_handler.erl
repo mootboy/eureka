@@ -28,8 +28,9 @@ from_json(Req0, State) ->
     Value ->
       {ok, Body, Req}  = cowboy_req:body(Req0),
       {Ejson}          = jiffy:decode(Body),
-      update_pin(binary_to_integer(Value), maps:from_list(Ejson)),
-      {true, Req, State#{pid => Ejson}}
+      Pin              = binary_to_integer(Value),
+      update_pin(Pin, maps:from_list(Ejson)),
+      {true, cowboy_req:set_resp_body(jiffy:encode(read_pin(Pin)), Req), State}
   end.
 
 return_json(Req, State) ->
