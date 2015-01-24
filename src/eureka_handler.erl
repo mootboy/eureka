@@ -43,7 +43,10 @@ return_json(Req, State) ->
 %% FIXME: move the hell out of here
 init_pin(N) ->
   rpc:call(ale@raspberrypi, gpio, start_link, [{N,output}]),
-  update_pin(N, #{<<"state">> => <<"off">>}).
+  update_pin(N, #{<<"state">> => <<"off">>
+                 , <<"id">> => <<"http://192.168.1.128:8080/"
+                                , (integer_to_binary(N))/binary
+                               >>}).
 
 read_pins() ->
   case ets:tab2list(pins) of
