@@ -17,10 +17,10 @@ init(_Req, _Opts) -> {cowboy_rest, _Req, maps:new()}.
 allowed_methods(Req, State) -> {[<<"GET">>, <<"POST">>], Req, State}.
 
 content_types_accepted(Req, State) ->
-  {[ {{<<"application">>, <<"json">>, []}, from_json} ], Req, State}.
+  {[ {{<<"application">>, <<"json">>, '*'}, from_json} ], Req, State}.
 
 content_types_provided(Req, State) ->
-  {[ {{<<"application">>, <<"json">>, []}, return_json }], Req, State}.
+  {[ {{<<"application">>, <<"json">>, '*'}, return_json }], Req, State}.
 
 from_json(Req0, State) ->
   case cowboy_req:binding(pid, Req0) of
