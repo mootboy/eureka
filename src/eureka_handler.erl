@@ -10,6 +10,7 @@
         , return_json/2
         ]).
 
+-export([init_pin/1]).
 
 init(_Req, _Opts) -> {cowboy_rest, _Req, maps:new()}.
 
@@ -39,6 +40,10 @@ return_json(Req, State) ->
   end.
 
 %% FIXME: move the hell out of here
+init_pin(N) ->
+  rpc:call(ale@raspberrypi, gpio, start_link, [{N,output}]),
+  update_pin(N, #{<<"state">> => <<"off">>}).
+
 read_pins() ->
   case ets:tab2list(pins) of
     [_|_] = Pins -> [Pin || {_, Pin} <- Pins];

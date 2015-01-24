@@ -1,4 +1,5 @@
 .*.swp
+relx
 ebin/
 _rel/
 deps/
