@@ -51,13 +51,21 @@ return_json(Req, State) ->
   {jiffy:encode(read_pins()), Req, State}.
 
 %% FIXME: move the hell out of here
-init_pin(N) ->
+init_pin({N, ?OUTPUT}) ->
   rpc:call(ale@raspberrypi, gpio, start_link, [{N,output}]),
   Data = #{ <<"state">> => <<"off">>
           , <<"id">>    => <<"http://192.168.1.128:8080/"
                             , (integer_to_binary(N))/binary
                            >>
           , <<"mode">>  => ?OUTPUT},
+  ets:insert(pins, {N, Data});
+init_pin({N, ?INPUT}) ->
+  rpc:call(ale@raspberrypi, gpio, start_link, [{N,input}]),
+  Data = #{ <<"value">> => rpc:call(ale@raspberrypi, gpio, read, [N])
+          , <<"id">>    => <<"http://192.168.1.128:8080/"
+                            , (integer_to_binary(N))/binary
+                           >>
+          , <<"mode">>  => ?INPUT},
   ets:insert(pins, {N, Data}).
 
 read_pins() ->

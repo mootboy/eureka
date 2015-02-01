@@ -5,8 +5,6 @@
         , stop/1
         ]).
 
--define(pinlist, [4,17,22,27]).
-
 start(_Type, _Args) ->
   Dispatch = cowboy_router:compile([{'_', [{ "/[:pid]"
                                            , eureka_handler
@@ -18,7 +16,7 @@ start(_Type, _Args) ->
                    , [{env, [{dispatch, Dispatch}]}]),
   ets:new(pins, [public, named_table]),
   {ok, _} = rpc:call(ale@raspberrypi, gpio_sup, start_link, [[]]),
-  [eureka_handler:init_pin(N) || N <- ?pinlist],
+  [eureka_handler:init_pin(N) || N <- application:get_env(eureka, pins, [])],
   eureka_sup:start_link().
 
 stop(_State) -> ok.
