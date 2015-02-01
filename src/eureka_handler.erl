@@ -78,9 +78,10 @@ update_pin({N, Pin1}, #{ <<"state">> := ?HIGH
   write_pin(N, Pin1, Pin2).
 
 write_pin(Key, Pin1, Pin2) ->
-  Pin3 = Pin2#{<<"id">> => maps:get(<<"id">>, Pin1)},
-  ets:insert(pins, {Key, Pin3}),
-  Pin3.
+  {Key, Pin1} = read_pin(Key),
+  Pin3        = Pin2#{<<"id">> => maps:get(<<"id">>, Pin1)},
+  true        = ets:insert(pins, {Key, Pin3}),
+  {Key, Pin3}.
 
 read_pin(N) ->
   case ets:lookup(pins, N) of
