@@ -54,7 +54,7 @@ return_json(Req, State) ->
 init_pin({N, ?OUTPUT}) ->
   rpc:call(ale@raspberrypi, gpio, start_link, [{N,output}]),
   Data = #{ <<"state">> => <<"off">>
-          , <<"id">>    => <<"http://192.168.1.128:8080/"
+          , <<"id">>    => <<"http://192.168.0.35:8080/"
                             , (integer_to_binary(N))/binary
                            >>
           , <<"mode">>  => ?OUTPUT},
@@ -87,7 +87,8 @@ update_pin({N, Pin1}, #{ <<"state">> := ?HIGH
 
 write_pin(Key, Pin1, Pin2) ->
   {Key, Pin1} = read_pin(Key),
-  Pin3        = Pin2#{<<"id">> => maps:get(<<"id">>, Pin1)},
+  Pin3        = Pin1#{ <<"description">> => maps:get(<<"description">>, Pin2)
+                     , <<"state">> => maps:get(<<"state">>, Pin2)},
   true        = ets:insert(pins, {Key, Pin3}),
   {Key, Pin3}.
 
