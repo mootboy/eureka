@@ -54,7 +54,7 @@ return_json(Req, State) ->
 init_pin({N, ?OUTPUT}) ->
   rpc:call(ale@raspberrypi, gpio, start_link, [{N,output}]),
   Data = #{ <<"state">> => <<"off">>
-          , <<"id">>    => <<"http://192.168.0.35:8080/"
+          , <<"id">>    => << (application:get_env(eureka, host, <<"localhost">>))/binary
                             , (integer_to_binary(N))/binary
                            >>
           , <<"mode">>  => ?OUTPUT},
@@ -62,7 +62,7 @@ init_pin({N, ?OUTPUT}) ->
 init_pin({N, ?INPUT}) ->
   rpc:call(ale@raspberrypi, gpio, start_link, [{N,input}]),
   Data = #{ <<"value">> => rpc:call(ale@raspberrypi, gpio, read, [N])
-          , <<"id">>    => <<"http://192.168.1.128:8080/"
+          , <<"id">>    => << (application:get_env(eureka, host, <<"localhost">>))/binary
                             , (integer_to_binary(N))/binary
                            >>
           , <<"mode">>  => ?INPUT},
