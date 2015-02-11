@@ -34,7 +34,15 @@ from_json(Req0, #{pin := {Key, Pin1}} = State) ->
   {Key, Pin}       = update_pin({Key, Pin1}, maps:from_list(Ejson)),
   {true, cowboy_req:set_resp_body(jiffy:encode(Pin), Req), State};
 from_json(Req0, State) ->
-  {true, Req0, State}.
+  Pin                = binary_to_integer(cowboy_req:binding(pid, Req0)),
+  {ok, Body, Req}    = cowboy_req:body(Req0),
+  {Ejson}            = jiffy:decode(Body),
+  {<<"mode">>, Mode} = lists:keyfind(<<"mode">>, 1, Ejson),
+  init_pin({Pin, Mode}),
+  {Pin, P}           = read_pin(Pin),
+  { {true, maps:get(<<"id">>, P)}
+  , cowboy_req:set_resp_body(jiffy:encode(P), Req)
+  , State}.
 
 resource_exists(Req, State) ->
   case cowboy_req:binding(pid, Req) of
