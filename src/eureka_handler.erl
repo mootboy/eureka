@@ -87,7 +87,7 @@ update_pin({N, Pin1}, #{ <<"state">> := ?HIGH
 
 write_pin(Key, Pin1, Pin2) ->
   {Key, Pin1} = read_pin(Key),
-  Pin3        = Pin1#{ <<"description">> => maps:get(<<"description">>, Pin2)
+  Pin3        = Pin1#{ <<"description">> => maps:get(<<"description">>, Pin2, "")
                      , <<"state">> => maps:get(<<"state">>, Pin2)},
   true        = ets:insert(pins, {Key, Pin3}),
   {Key, Pin3}.
