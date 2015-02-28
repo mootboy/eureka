@@ -15,8 +15,8 @@ start(_Type, _Args) ->
                    , [{port, application:get_env(eureka, port, 8080)}]
                    , [{env, [{dispatch, Dispatch}]}]),
   ets:new(pins, [public, named_table]),
-  {ok, _} = rpc:call(ale@raspberrypi, gpio_sup, start_link, [[]]),
-  [eureka_handler:init_pin(N) || N <- application:get_env(eureka, pins, [])],
+  {ok, GPIOnode} = application:get_env(eureka, gpio_node),
+  {ok, _}        = rpc:call(GPIOnode, gpio_sup, start_link, [[]]),
   eureka_sup:start_link().
 
 stop(_State) -> ok.

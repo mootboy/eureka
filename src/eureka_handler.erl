@@ -60,7 +60,8 @@ return_json(Req, State) ->
 
 %% FIXME: move the hell out of here
 init_pin({N, ?OUTPUT}) ->
-  rpc:call(ale@raspberrypi, gpio, start_link, [{N,output}]),
+  {ok, GPIOnode} = application:get_env(eureka, gpio_node),
+  rpc:call(GPIOnode, gpio, start_link, [{N,output}]),
   Data = #{ <<"state">> => <<"off">>
           , <<"id">>    => << (application:get_env(eureka, host, <<"localhost">>))/binary
                             , (integer_to_binary(N))/binary
@@ -68,7 +69,8 @@ init_pin({N, ?OUTPUT}) ->
           , <<"mode">>  => ?OUTPUT},
   ets:insert(pins, {N, Data});
 init_pin({N, ?INPUT}) ->
-  rpc:call(ale@raspberrypi, gpio, start_link, [{N,input}]),
+  {ok, GPIOnode} = application:get_env(eureka, gpio_node),
+  rpc:call(GPIOnode, gpio, start_link, [{N,input}]),
   Data = #{ <<"value">> => rpc:call(ale@raspberrypi, gpio, read, [N])
           , <<"id">>    => << (application:get_env(eureka, host, <<"localhost">>))/binary
                             , (integer_to_binary(N))/binary
@@ -85,12 +87,14 @@ read_pins() ->
 update_pin({N, Pin1}, #{ <<"state">> := ?LOW
                        , <<"mode">>  := ?OUTPUT
                        } = Pin2) ->
-  ok = rpc:call(ale@raspberrypi, gpio, write, [N, 0]),
+  {ok, GPIOnode} = application:get_env(eureka, gpio_node),
+  ok = rpc:call(GPIOnode, gpio, write, [N, 0]),
   write_pin(N, Pin1, Pin2);
 update_pin({N, Pin1}, #{ <<"state">> := ?HIGH
                        , <<"mode">>  := ?OUTPUT
                        } = Pin2) ->
-  ok = rpc:call(ale@raspberrypi, gpio, write, [N, 1]),
+  {ok, GPIOnode} = application:get_env(eureka, gpio_node),
+  ok = rpc:call(GPIOnode, gpio, write, [N, 1]),
   write_pin(N, Pin1, Pin2).
 
 write_pin(Key, Pin1, Pin2) ->
